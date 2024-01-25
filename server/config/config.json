@@ -1,0 +1,23 @@
+{
+  "development": {
+    "username": "postgres",
+    "password": "postgresadmin",
+    "database": "cricketFullStack",
+    "host": "localhost",
+    "dialect": "postgres"
+  },
+  "test": {
+    "username": "postgres",
+    "password": "postgresadmin",
+    "database": "cricketFullStack",
+    "host": "localhost",
+    "dialect": "postgres"
+  },
+  "production": {
+    "username": "postgres",
+    "password": "postgresadmin",
+    "database": "cricketFullStack",
+    "host": "localhost",
+    "dialect": "postgres"
+  }
+}
