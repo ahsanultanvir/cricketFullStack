@@ -12,10 +12,10 @@ module.exports = {
 		 * Example:
 		 * await queryInterface.createTable('users', { id: Sequelize.INTEGER });
 		 */
-		await queryInterface.addColumn(Player.tableName, "picture", {
-			type: DataTypes.BLOB,
+		await queryInterface.addColumn(Player.tableName, "image", {
+			type: DataTypes.STRING,
 			allowNull: false,
-			defaultValue: "no picture",
+			defaultValue: "player_symbol",
 		});
 	},
 
@@ -26,6 +26,6 @@ module.exports = {
 		 * Example:
 		 * await queryInterface.dropTable('users');
 		 */
-		await queryInterface.removeColumn(Player.tableName, "picture");
+		await queryInterface.removeColumn(Player.tableName, "image");
 	},
 };

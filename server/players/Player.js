@@ -9,22 +9,22 @@ const Player = cricketDB.define(
 			type: DataTypes.STRING,
 			allowNull: false,
 		},
-		isBatsman:{
+		isBatsman: {
 			type: DataTypes.BOOLEAN,
-			allowNull: false
+			allowNull: false,
 		},
-		isBowler:{
+		isBowler: {
 			type: DataTypes.BOOLEAN,
-			allowNull: false
+			allowNull: false,
 		},
-		isWicketkeeper:{
+		isWicketkeeper: {
 			type: DataTypes.BOOLEAN,
-			allowNull: false
+			allowNull: false,
 		},
-		picture:{
-			type: DataTypes.BLOB,
-			allowNull: false
-		}
+		image: {
+			type: DataTypes.STRING,
+			allowNull: false,
+		},
 	},
 	{
 		timestamps: true,

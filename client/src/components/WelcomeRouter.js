@@ -1,4 +1,4 @@
-import { Card, Button } from "react-bootstrap";
+import { Card } from "react-bootstrap";
 
 function WelcomeRouter() {
 	return (
@@ -9,12 +9,8 @@ function WelcomeRouter() {
 					<Card.Text>
 						Manage your cricket teams and players with ease!
 					</Card.Text>
-					{/* <Button variant="primary" href="/get-started">
-						Get Started
-					</Button> */}
 				</Card.Body>
 			</Card>
-			{/* <h1>Hi from Cricket</h1> */}
 		</div>
 	);
 }

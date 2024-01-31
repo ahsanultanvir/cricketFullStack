@@ -1,7 +1,7 @@
 "use strict";
 
+const Team = require("../teams/Team");
 const { DataTypes } = require("sequelize");
-const Player = require("../players/Player");
 
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
@@ -12,10 +12,10 @@ module.exports = {
 		 * Example:
 		 * await queryInterface.createTable('users', { id: Sequelize.INTEGER });
 		 */
-		await queryInterface.addColumn(Player.tableName, "picture", {
-			type: DataTypes.BLOB,
+		await queryInterface.addColumn(Team.tableName, "logo_path", {
+			type: DataTypes.STRING,
 			allowNull: false,
-			defaultValue: "no picture",
+			defaultValue: "noFlag.png",
 		});
 	},
 
@@ -26,6 +26,6 @@ module.exports = {
 		 * Example:
 		 * await queryInterface.dropTable('users');
 		 */
-		await queryInterface.removeColumn(Player.tableName, "picture");
+		await queryInterface.removeColumn(Team.tableName, "logo_path");
 	},
 };
