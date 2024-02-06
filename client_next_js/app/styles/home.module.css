@@ -1,0 +1,10 @@
+.main {
+    /* color: red; */
+	display: flex;
+	flex-direction: row;
+	/* justify-content: space-between; */
+	align-items: center;
+    gap: 20px;
+	/* padding: 6rem; */
+	/* min-height: 100vh; */
+}

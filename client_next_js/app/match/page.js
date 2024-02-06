@@ -132,7 +132,7 @@ function MatchesRouter() {
 				<Table striped bordered hover variant="dark">
 					<thead>
 						<tr>
-							<th>#</th>
+							{/* <th>#</th> */}
 							<th>Team_1 Name</th>
 							<th>Team_2 Name</th>
 							<th>Date of Match</th>
@@ -144,16 +144,16 @@ function MatchesRouter() {
 						</tr>
 					</thead>
 					<tbody>
-						{matches.map((match) => (
+						{matches.sort((a,b)=>a.id-b.id) && matches.map((match) => (
 							<tr key={match.id}>
-								<td>
+								{/* <td>
 									<Link href={`/match/${match.id}`}>{match.id}</Link>
+								</td> */}
+								<td>
+									<Link href={`/team/${match.team_1}`}>{match.Team1 && match.Team1.name}</Link>
 								</td>
 								<td>
-									<Link href={`/team/${match.team_1}`}>{match.team_1}</Link>
-								</td>
-								<td>
-									<Link href={`/team/${match.team_2}`}>{match.team_2}</Link>
+									<Link href={`/team/${match.team_2}`}>{match.Team2 && match.Team2.name}</Link>
 								</td>
 								<td>{match.date}</td>
 								<td>{match.vanue}</td>
