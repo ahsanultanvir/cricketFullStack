@@ -1,18 +1,36 @@
 "use client";
 
-import React from 'react';
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
-import Link from 'next/link';
-import Button from "react-bootstrap/Button";
-import Form from "react-bootstrap/Form";
-import Table from "react-bootstrap/Table";
-import Modal from "react-bootstrap/Modal";
-import Alert from "react-bootstrap/Alert";
-import { FaRegEdit } from "react-icons/fa";
-import { MdDelete } from "react-icons/md";
+import Link from "next/link";
+import { Button } from "primereact/button";
+import { Dialog } from "primereact/dialog"; //modal
+import { InputText } from "primereact/inputtext"; //form
+import { FileUpload } from "primereact/fileupload"; //file
+import { DataTable } from "primereact/datatable"; //table
+import { Column } from "primereact/column";
+import { Message } from "primereact/message"; //alert
+const Joi = require('joi');
+// import { FaRegEdit } from "react-icons/fa";
+// import { MdDelete } from "react-icons/md";
 
 const api_point = "http://localhost:5000";
+
+const centerDivStyle = {
+	display: "flex",
+	justifyContent: "center",
+	alignItems: "center",
+	margin: "10px",
+};
+
+const schema = Joi.object({
+    name: Joi.string()
+        .alphanum()
+        .min(3)
+        .max(30)
+        .required(),
+	image: Joi.string().dataUri().required()
+})
 
 function TeamsRouter() {
 	const [name, setName] = useState("");
@@ -20,15 +38,13 @@ function TeamsRouter() {
 	const [nameAllTeam, setNameAllTeam] = useState([]);
 	const [image, setImage] = useState(null);
 	const [loading, setLoading] = useState(true);
-	const [show, setShow] = useState(false);
-	const handleClose = () => setShow(false);
-	const handleShow = () => setShow(true);
+	const [displayDialog, setDisplayDialog] = useState(false);
 	const [showAddOrEditButton, setShowAddOrEditButton] = useState(false);
 	const [showAlert, setShowAlert] = useState(false);
 
 	useEffect(() => {
 		axios
-			.get("http://localhost:5000/team")
+			.get(api_point+"/team")
 			.then((res) => {
 				const { data } = res;
 				setNameAllTeam(data.teams);
@@ -39,21 +55,27 @@ function TeamsRouter() {
 	}, [loading]);
 
 	const addTeam = async () => {
-		await axios
-			.post("http://localhost:5000/team", {
+		try {
+			await schema.validateAsync({ name, image });
+			await axios
+			.post(api_point+"/team", {
 				name,
 				logo_path: image,
 			})
 			.then(function (response) {
 				console.log(response);
+				setName("");
+				setImage(null);
 			})
 			.catch(function (error) {
 				console.log(error);
 			});
+		}
+		catch (err) { console.log(err) }
 	};
 
 	const handleImageChange = (event) => {
-		const file = event.target.files[0];
+		const file = event.files[0];
 
 		if (file) {
 			const reader = new FileReader();
@@ -75,6 +97,8 @@ function TeamsRouter() {
 			})
 			.then((res) => {
 				console.log(res);
+				setName("");
+				setImage(null);
 			})
 			.catch((err) => console.log(err));
 	};
@@ -84,9 +108,46 @@ function TeamsRouter() {
 			.delete(api_point + "/team/" + team.id)
 			.then((res) => {
 				console.log(res);
+				setName("");
+				setImage(null);
 			})
 			.catch((err) => console.log(err));
 		setShowAlert(false);
+	};
+
+	const renderFooter = () => {
+		return (
+			<div>
+				{showAddOrEditButton ? (
+					<Button
+						label="Add Team"
+						onClick={() => {
+							addTeam();
+							setLoading(true);
+							setShowAddOrEditButton(false);
+							setDisplayDialog(false);
+						}}
+					/>
+				) : (
+					<Button
+						label="Save Team"
+						onClick={() => {
+							editTeam();
+							setLoading(true);
+							setShowAddOrEditButton(false);
+							setDisplayDialog(false);
+						}}
+					/>
+				)}
+				<Button
+					label="Cancel"
+					onClick={() => {
+						setShowAddOrEditButton(false);
+						setDisplayDialog(false);
+					}}
+				/>
+			</div>
+		);
 	};
 
 	if (loading) return <div>loading......</div>;
@@ -96,153 +157,113 @@ function TeamsRouter() {
 				<h1>Team Page</h1>
 				<hr />
 
-				<Button
-					onClick={() => {
-						setShowAddOrEditButton(true);
-						handleShow();
-					}}
-					className="mb-3"
-				>
-					Add new team
-				</Button>
+				<div style={centerDivStyle}>
+					<Button
+						label="Add new team"
+						className="p-button-outlined mb-3"
+						onClick={() => {
+							setShowAddOrEditButton(true);
+							setDisplayDialog(true);
+						}}
+					/>
+				</div>
 
 				{showAlert ? (
-					<Alert variant="danger" className="m-3">
-						{team.name} will be deleted!
+					<Message severity="error" className="p-m-3" text={`${team.name} will be deleted!`}>
 						<Button
+							label="Delete"
+							className="p-button-danger mr-3"
 							onClick={() => deleteTeam()}
-							className="mr-3"
-							variant="danger"
-						>
-							Delete
-						</Button>
+						/>
 						<Button
+							label="Cancel"
+							className="p-button-secondary ml-3"
 							onClick={() => setShowAlert(false)}
-							className="ml-3"
-							variant="secondary"
-						>
-							Cancel
-						</Button>
-					</Alert>
+						/>
+					</Message>
 				) : null}
 
-				<Table striped bordered hover variant="dark">
-					<thead>
-						<tr>
-							<th>#</th>
-							<th>Team Name</th>
-							<th>Team Logo</th>
-							<th>Edit</th>
-							<th>Delete</th>
-						</tr>
-					</thead>
-					<tbody>
-						{nameAllTeam.map((team) => (
-							<tr key={team.id}>
-								<td>{team.id}</td>
-								<td>
-									<Link href={`/team/${team.id}`}>{team.name}</Link>
-								</td>
-								<td>
-									<img
-										src={api_point + `/uploaded-assets/${team.logo_path}`}
-										alt="logo"
-										width={"40px"}
-										height={"30px"}
-									/>
-								</td>
-								<td
-									onClick={() => {
-										setTeam(team);
-										setShowAddOrEditButton(false);
-										setName(team.name);
-										handleShow();
-									}}
-								>
-									<FaRegEdit />
-								</td>
-								<td
-									onClick={() => {
-										setTeam(team);
-										setShowAlert(true);
-									}}
-								>
-									<MdDelete />
-								</td>
-							</tr>
-						))}
-					</tbody>
-				</Table>
-
-				<Modal show={show} onHide={handleClose}>
-					<Modal.Header closeButton>
-						<Modal.Title>
-							{showAddOrEditButton ? "Add Team" : "Edit Team"}
-						</Modal.Title>
-					</Modal.Header>
-					<Modal.Body>
-						<Form>
-							<Form.Group className="mb-3" controlId="formBasicTeamName">
-								<Form.Label>Team Name</Form.Label>
-								<Form.Control
-									type="text"
-									placeholder="Enter team name"
-									value={name}
-									onChange={(event) => setName(event.target.value)}
-								/>
-							</Form.Group>
-
-							<Form.Group className="mb-3" controlId="formBasicAddLogo">
-								<Form.Label>Add logo</Form.Label>
-								<Form.Control
-									type="file"
-									accept="image/*"
-									onChange={handleImageChange}
-								/>
-							</Form.Group>
-						</Form>
-					</Modal.Body>
-					<Modal.Footer>
-						{showAddOrEditButton ? (
-							<Button
-								variant="primary"
-								type="submit"
-								onClick={() => {
-									addTeam();
-									handleClose();
-									setLoading(true);
-									setShowAddOrEditButton(false);
-								}}
-							>
-								Add Team
-							</Button>
-						) : (
-							<Button
-								variant="primary"
-								type="submit"
-								onClick={() => {
-									console.log(team);
-									editTeam();
-									handleClose();
-									setLoading(true);
-									setShowAddOrEditButton(false);
-								}}
-							>
-								Save Team
-							</Button>
+				<DataTable
+					value={nameAllTeam.sort((a, b) => a.id - b.id)}
+					// selectionMode="single"
+					// selection={team}
+					// onSelectionChange={(e) => onRowSelect(e)}
+				>
+					<Column field="id" header="#" />
+					<Column
+						field="name"
+						header="Team Name"
+						body={(rowData) => (
+							<Link href={`/team/${rowData.id}`}>{rowData.name}</Link>
 						)}
+					/>
+					<Column
+						field="logo_path"
+						header="Team Logo"
+						body={(rowData) => (
+							<img
+								src={api_point + `/uploaded-assets/${rowData.logo_path}`}
+								alt="logo"
+								width={"40px"}
+								height={"30px"}
+							/>
+						)}
+					/>
+					<Column
+						header="Update"
+						body={(rowData) => (
+							<Button
+								icon="pi pi-pencil"
+								className="p-button-rounded p-button-warning p-mr-2"
+								onClick={() => {
+									setTeam(rowData);
+									setShowAddOrEditButton(false);
+									setName(rowData.name);
+									setDisplayDialog(true);
+								}}
+							/>
+						)}
+					/>
+					<Column
+						header="Delete"
+						body={(rowData) => (
+							<Button
+								icon="pi pi-trash"
+								className="p-button-rounded p-button-danger"
+								onClick={() => {
+									setTeam(rowData);
+									setShowAlert(true);
+								}}
+							/>
+						)}
+					/>
+				</DataTable>
 
-						<Button
-							variant="secondary"
-							onClick={() => {
-								handleClose();
-								setShowAddOrEditButton(false);
-							}}
-						>
-							Close
-						</Button>
-					</Modal.Footer>
-				</Modal>
+				<Dialog
+					visible={displayDialog}
+					onHide={() => setDisplayDialog(false)}
+					header={showAddOrEditButton ? "Add Team" : "Edit Team"}
+					footer={renderFooter()}
+				>
+					<div className="p-fluid">
+						<div className="p-field">
+							<label htmlFor="name">Team Name</label>
+							<InputText
+								id="name"
+								value={name}
+								onChange={(e) => setName(e.target.value)}
+							/>
+						</div>
+						<div className="p-field">
+							<label htmlFor="logo">Add Logo</label>
+							<FileUpload
+								mode="basic"
+								accept="image/*"
+								onSelect={handleImageChange}
+							/>
+						</div>
+					</div>
+				</Dialog>
 			</div>
 		);
 }

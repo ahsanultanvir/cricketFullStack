@@ -1,4 +1,9 @@
-:root {
+@import 'primeicons/primeicons.css';
+@import 'primereact/resources/primereact.min.css';
+@import "primereact/resources/themes/bootstrap4-light-blue/theme.css";
+
+
+/* :root {
   --max-width: 1100px;
   --border-radius: 12px;
   --font-mono: ui-monospace, Menlo, Monaco, "Cascadia Mono", "Segoe UI Mono",
@@ -104,4 +109,4 @@ a {
   html {
     color-scheme: dark;
   }
-}
+} */

@@ -29,6 +29,7 @@ router.get("/:id", async (req, res) => {
 router.post("/", async (req, res) => {
 	const data = req.body;
 	const { name, logo_path } = data;
+	// console.log(logo_path);
 	const logo_path_string = saveImageOnServer(logo_path);
 	await Team.create({
 		name,

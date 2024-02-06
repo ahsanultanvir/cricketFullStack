@@ -1,7 +1,6 @@
 const { DataTypes } = require("sequelize");
 const cricketDB = require("../config/database");
 const Team = require("../teams/Team");
-const MatchTeam = require("../matchTeam/MatchTeam");
 
 const Match = cricketDB.define(
 	"Match",
@@ -30,8 +29,10 @@ const Match = cricketDB.define(
 );
 
 (async () => {
-	// Match.belongsToMany(Team, { as: 'Team1', through: MatchTeam, foreignKey: 'team_1' });
-	// Match.belongsToMany(Team, { as: 'Team2', through: MatchTeam, foreignKey: 'team_2' });
+	Match.belongsTo(Team, { as: "Team1", foreignKey: "team_1" });
+	Match.belongsTo(Team, { as: "Team2", foreignKey: "team_2" });
+	Team.hasMany(Match, { as: "Matches1", foreignKey: "team_1" });
+	Team.hasMany(Match, { as: "Matches2", foreignKey: "team_2" });
 	await Match.sync({ alter: true });
 })();
 

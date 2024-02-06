@@ -3,12 +3,17 @@ const router = express.Router();
 const Match = require("./Match");
 const Team = require("../teams/Team");
 
+// Match.belongsTo(Team, { as: "Team1", foreignKey: "team_1" });
+// Match.belongsTo(Team, { as: "Team2", foreignKey: "team_2" });
+// Team.hasMany(Match, { as: "Matches1", foreignKey: "team_1" });
+// Team.hasMany(Match, { as: "Matches2", foreignKey: "team_2" });
+
 router.get("/", async (req, res) => {
 	await Match.findAll({
-		// include: [
-		// 	{ model: Team, as: "Team1" },
-		// 	{ model: Team, as: "Team2" },
-		// ],
+		include: [
+			{ model: Team, as: "Team1" },
+			{ model: Team, as: "Team2" },
+		],
 	})
 		.then((matches) => {
 			res.status(200).send({ matches: matches, total_matches: matches.length });

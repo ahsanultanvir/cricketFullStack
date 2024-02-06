@@ -225,7 +225,7 @@ function PlayersRouter() {
 						</tr>
 					</thead>
 					<tbody>
-						{nameAllPlayer.map((player) => (
+						{nameAllPlayer.sort((a,b)=>a.id-b.id) && nameAllPlayer.map((player) => (
 							<tr key={player.id}>
 								<td>{player.id}</td>
 								<td>

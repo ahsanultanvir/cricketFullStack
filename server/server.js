@@ -4,6 +4,7 @@ const team = require("./teams/router");
 const player = require("./players/router");
 const match = require("./matches/router");
 const welcome = require("./welcome/welcome");
+const user = require("./users/router");
 const cors = require("cors");
 const app = express();
 const port = 5000;
@@ -16,6 +17,7 @@ app.use("/team", team);
 app.use("/player", player);
 app.use("/welcome", welcome);
 app.use("/match", match);
+app.use("/user", user);
 
 app.get("/", (req, res) => {
 	res.send({ success: true, message: "Get Api is called" });
